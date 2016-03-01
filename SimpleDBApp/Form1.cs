@@ -14,6 +14,7 @@ namespace SimpleDBApp
     public partial class SimpleDBApp : Form
     {
         private DataTable dt;
+        private bool newRow = false;
         public SimpleDBApp()
         {
             InitializeComponent();
@@ -21,6 +22,8 @@ namespace SimpleDBApp
 
         }
 
+        //=====================================================================
+        // Data Init
         private void InitializeDataGrid()
         {
             dt = new DataTable("dataTable");
@@ -58,6 +61,8 @@ namespace SimpleDBApp
             comboBox2.Text = comboBox2.Items[0].ToString();
         }
 
+        //=====================================================================
+        // Record Hash
         private void button1_Click(object sender, EventArgs e)
         {
             var elem = dt.Rows[(int) comboBox1.SelectedItem - 1][dt.Columns[comboBox2.SelectedItem.ToString()].Ordinal].ToString().ToCharArray();
@@ -69,6 +74,19 @@ namespace SimpleDBApp
             dt.Rows[(int)comboBox1.SelectedItem - 1][dt.Columns[comboBox2.SelectedItem.ToString()].Ordinal] = newElem;
         }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var elem = dt.Rows[(int)comboBox1.SelectedItem - 1][dt.Columns[comboBox2.SelectedItem.ToString()].Ordinal].ToString().ToCharArray();
+            for (int i = 0; i < elem.Length; ++i)
+            {
+                elem[i] = (char)(elem[i] - 3);
+            }
+            string newElem = new string(elem);
+            dt.Rows[(int)comboBox1.SelectedItem - 1][dt.Columns[comboBox2.SelectedItem.ToString()].Ordinal] = newElem;
+        }
+
+        //=====================================================================
+        // XML Serialization
         private void buttonToXML_Click(object sender, EventArgs e)
         {
             dt.WriteXml("dataTable.xml");
@@ -84,6 +102,49 @@ namespace SimpleDBApp
                 dt = ds.Tables[0];
             }
             dataGridView1.DataSource = dt;
+            comboBox1.Items.Clear();
+            for (int i = 0; i < dt.Rows.Count; ++i)
+            {
+                comboBox1.Items.Add(i + 1);
+            }
+            comboBox1.Text = comboBox1.Items[0].ToString();
+        }
+
+        //=====================================================================
+        // UI Control
+        private void dataGridView1_UserAddedRow(object sender, DataGridViewRowEventArgs e)
+        {
+            newRow = true;
+        }
+
+        private void dataGridView1_RowValidated(object sender, DataGridViewCellEventArgs e)
+        {
+            if (newRow)
+            {
+                comboBox1.Items.Clear();
+                for (int i = 0; i < dt.Rows.Count; ++i)
+                {
+                    comboBox1.Items.Add(i + 1);
+                }
+                comboBox1.Text = comboBox1.Items[0].ToString();
+                newRow = false;
+            }
+        }
+
+        private void dataGridView1_CellEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            comboBox1.Text = (e.RowIndex + 1).ToString();
+            comboBox2.Text = dt.Columns[e.ColumnIndex].ColumnName;
+        }
+
+        private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            dataGridView1.CurrentCell = dataGridView1.Rows[(int)comboBox1.SelectedItem - 1].Cells[dt.Columns[comboBox2.SelectedItem.ToString()].Ordinal];
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            dataGridView1.CurrentCell = dataGridView1.Rows[(int)comboBox1.SelectedItem - 1].Cells[dt.Columns[comboBox2.SelectedItem.ToString()].Ordinal];
         }
     }
 }
