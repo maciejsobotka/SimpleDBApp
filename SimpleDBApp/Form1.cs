@@ -17,7 +17,13 @@ namespace SimpleDBApp
         public SimpleDBApp()
         {
             InitializeComponent();
-            dt = new DataTable("dataTable.xml");
+            InitializeDataGrid();
+
+        }
+
+        private void InitializeDataGrid()
+        {
+            dt = new DataTable("dataTable");
             if (File.Exists("dataTable.xml"))
             {
                 DataSet ds = new DataSet();
@@ -26,9 +32,9 @@ namespace SimpleDBApp
             }
             else 
             {
-                dt.Columns.Add("Column1");
-                dt.Columns.Add("Column2");
-                dt.Columns.Add("Column3");
+                dt.Columns.Add("Imię");
+                dt.Columns.Add("Nazwisko");
+                dt.Columns.Add("Grupa");
                 for (int i = 0; i < dt.Columns.Count; ++i )
                 {
                     dt.Columns[i].DefaultValue = String.Empty;
@@ -54,7 +60,30 @@ namespace SimpleDBApp
 
         private void button1_Click(object sender, EventArgs e)
         {
+            var elem = dt.Rows[(int) comboBox1.SelectedItem - 1][dt.Columns[comboBox2.SelectedItem.ToString()].Ordinal].ToString().ToCharArray();
+            for (int i = 0; i < elem.Length; ++i)
+            {
+                elem[i] = (char)(elem[i] + 3);
+            }
+            string newElem = new string(elem);
+            dt.Rows[(int)comboBox1.SelectedItem - 1][dt.Columns[comboBox2.SelectedItem.ToString()].Ordinal] = newElem;
+        }
+
+        private void buttonToXML_Click(object sender, EventArgs e)
+        {
             dt.WriteXml("dataTable.xml");
+        }
+
+        private void buttonFromXML_Click(object sender, EventArgs e)
+        {
+            dt = new DataTable("dataTable");
+            if (File.Exists("dataTable.xml"))
+            {
+                DataSet ds = new DataSet();
+                ds.ReadXml("dataTable.xml");
+                dt = ds.Tables[0];
+            }
+            dataGridView1.DataSource = dt;
         }
     }
 }
