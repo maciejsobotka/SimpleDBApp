@@ -142,7 +142,7 @@ namespace SimpleDBApp
             dataGridView1.CurrentCell = dataGridView1.Rows[(int)comboBox1.SelectedItem - 1].Cells[dt.Columns[comboBox2.SelectedItem.ToString()].Ordinal];
         }
 
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboBox2_SelectionChangeCommitted(object sender, EventArgs e)
         {
             dataGridView1.CurrentCell = dataGridView1.Rows[(int)comboBox1.SelectedItem - 1].Cells[dt.Columns[comboBox2.SelectedItem.ToString()].Ordinal];
         }
